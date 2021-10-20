@@ -71,9 +71,9 @@ function startQuiz(){
     timerDisplay.textContent = timerSeconds;
 
     //starts timer 
-
+    timerCountdown();
     //starts questions
-
+    nextQuestion();
     //remove start button
     startButton.style.display = "none";
 }
@@ -144,15 +144,66 @@ function checkAnswer(event){
     }
 };
 
+function endGame(){
+    //change page
+    quizAnswers.style.display = "none";
+    container.className = "quiz mage mt-5"
+    title.setAttribute ("class", "h2");
+    text.setAttribute("style", "border-top: 0");
+    text.removeAttribute("class");
+    text.textContent = "Final score: " + score + ". Enter your initials!";
+    inputField.style.display = "block";
+
+    //change title display
+    if (timerSeconds <= 0){
+        title.textContent = "Out of time!";
+    } else {
+        title.textContent = "Done!";
+
+        submitButton.addEventListener("click", storeHighScore);
+    }
+}
+
+//store high scores in localStorage
+function storeHighScore (event){
+
+}
+
+
+
+//loads high scores into scores array
+function loadHighScore(){
+
+}
+
+//shows the high scores
+function seeHighScores(){
+    
+}
 
 
 
 
 
+//timer countdown function
+function timerCountdown(){  
+    timerInterval = setInterval(function(){
+        timerSeconds --;
+        timerDisplay.textContent = timerSeconds;
+
+        if (timerSeconds < 1) {
+            timerDisplay.text = 0;
+            endGame();
+            clearInterval(timerInterval);
+        };
+
+        if (currentQuestion === 8){
+            timerDisplay.textContent = timerSeconds;
+            clearInterval(timerInterval);
+        }
+    }, 1000)
 
 
-
-
-
+} 
 // start quiz EL
 startButton.addEventListener("click", startQuiz);
