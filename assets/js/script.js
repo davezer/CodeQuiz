@@ -10,12 +10,13 @@ var answerButtons = document.getElementsByClassName("answer-button");
 var answerMessage = document.getElementById("answer-message");
 var inputField = document.getElementById("input-field");
 var initials = document.getElementById("intials");
-var submitButton = document.getElementById("submit-button");
+var submitButton = document.getElementById("submitBtn");
+
 
 //set variables
 var timerSeconds = 0;
 var currentQuestion = 0;
-var score = 0;
+var score = timerSeconds;
 var scoreArray = [];
 var timerInterval = false;
 
@@ -134,6 +135,10 @@ function checkAnswer(event){
         answerMessage.textContent = "Nope!";
         answerMessage.className = "answer-message";
 
+        setTimeout(function() {
+            answerMessage.style.display = "none";
+        }, 800)
+
         if (timerSeconds < 10) {
             timerSeconds - 10;
             endGame();
@@ -142,7 +147,7 @@ function checkAnswer(event){
             endGame();
 
         } else {
-            timerSeconds -= 10;
+            timerSeconds -= 15;
             nextQuestion();
         };
     }
@@ -151,21 +156,26 @@ function checkAnswer(event){
 function endGame(){
     //change page
     quizAnswers.style.display = "none";
-    container.className = "quiz mage mt-5"
+    answerMessage.style.display = "none";
+    container.className = "quiz mage mt-5";
     title.setAttribute ("class", "h2");
     text.setAttribute("style", "border-top: 0");
     text.removeAttribute("class");
-    text.textContent = "Final score: " + score + ". Enter your initials!";
+    text.textContent = "Final score: " + timerSeconds + ". Enter your initials!";
     inputField.style.display = "block";
+
+    
 
     //change title display
     if (timerSeconds <= 0){
-        title.textContent = "Out of time!";
+        title.textContent = "Times Up!";
     } else {
-        title.textContent = "Done!";
+        title.textContent = "Fin!";
+    
     }
 
-    submitButton.addEventListener("click", storeHighScore);
+    submitButton.addEventListener("click", seeHighScores);
+    
     
 }
 
@@ -175,20 +185,21 @@ function storeHighScore (event){
 
     if (initials.value.length === 0){
         return
+
     } else {
         newScore = {
             userName: initials.value.trim(),
-            userScore: score
+            userScore: timerSeconds
         };
         scoreArray.push(newScore);
 
         scoreArray.sort((a,b) => b.userScore - a.userScore);
 
         localStorage.setItem("score", JSON.stringify(scoreArray));
-
         seeHighScores();
-    }
 
+    }
+    
 }
 
 
@@ -207,12 +218,11 @@ function loadHighScore(){
 
 //shows the high scores
 function seeHighScores() {
-    // clears timerInterval if countdown has been initiated
     if (timerInterval) {
         clearInterval(timerInterval);
-    };
+    }
 
-    // creates new list and button elements and appends them to container
+    // creates new list and button elements
     container.className = 'score-page mt-5 card bg-light p-4';
     var ul = document.createElement('ul');
     var returnButton = document.createElement('button');
@@ -223,7 +233,7 @@ function seeHighScores() {
     container.appendChild(returnButton);
     container.appendChild(clearButton);
 
-    // removes navbar and other elements
+    // remove elements
     startButton.style.display = 'none';
     navBar.style.visibility = 'hidden';
     title.textContent = 'High Scores';
@@ -232,7 +242,7 @@ function seeHighScores() {
     quizAnswers.style.display = 'none';
     inputField.style.display = 'none';
 
-    // render a new li for each highscore
+    //  new li for each highscore
     for (i = 0; i < scoreArray.length; i++) {
         var score = scoreArray[i].userName + ' : ' + scoreArray[i].userScore;
 
@@ -241,7 +251,7 @@ function seeHighScores() {
         ul.appendChild(li);
     }
 
-    // adds event listener for return button to bring person back to index.html
+    //  event listener for return button to go back to quiz start
     returnButton.addEventListener('click', function() {
         location.href = 'index.html'
     });
@@ -252,32 +262,6 @@ function seeHighScores() {
         ul.innerHTML = '';
     });
 };
-
-
-// counts down from starting timerSecs 
-function countdown() {
-    // interval function that counts down
-    timerInterval = setInterval(function() {
-        timerSecs --;
-        timerDisplay.textContent = timerSecs;
-
-        // alert that user has run out of time and end game if timer runs out
-        if (timerSecs < 1) {
-            timerDisplay.textContent = 0;
-            endGame();
-            clearInterval(timerInterval);
-        };
-
-        // clear timer if current question hits 5 (game is over)
-        if (currentQuestion === 5) {
-            timerDisplay.textContent = timerSecs;
-            clearInterval(timerInterval);
-        }
-    }, 1000)
-}
-
-
-
 
 
 //timer countdown function
