@@ -23,7 +23,7 @@ const questions = [
     {
         title: "How do you add a comment in JavaScript?",
         choices: ["a. //This is a comment", "b. <!--This is a comment-->", "c. This is a comment", "d. *This is a comment*"],
-        answer: "a. //This is comment"
+        answer: "a. //This is a comment"
     },
 
     {
@@ -59,7 +59,7 @@ const questions = [
     {
         title: "What is a recursive loop?",
         choices: ["a. An infinite loop formed when a function calls itself", "b. A loop that executes once and exits", "c. A loop that prints a return", "d. All of the above"],
-        answer: " a. An infinite loop formed when a function calls itself"
+        answer: "a. An infinite loop formed when a function calls itself"
     },
    
 ];
@@ -88,7 +88,7 @@ function nextQuestion(){
     text.className = "h4";
     text.setAttribute("style", "border-top: 1px double solid; padding-top 15px;")
 
-    //display the answer buttons
+    //display answer buttons
     quizAnswers.style.display = "block";
 
     // take answers from the questions array and assign to answer buttons
@@ -113,6 +113,10 @@ function checkAnswer(event){
         currentQuestion++;
         score++;
     
+        // remove message
+        setTimeout(function() {
+            answerMessage.style.display = "none";
+        }, 800)
 
         // end game if no more questions
         if (currentQuestion === questions.length){
@@ -159,13 +163,31 @@ function endGame(){
         title.textContent = "Out of time!";
     } else {
         title.textContent = "Done!";
-
-        submitButton.addEventListener("click", storeHighScore);
     }
+
+    submitButton.addEventListener("click", storeHighScore);
+    
 }
 
 //store high scores in localStorage
 function storeHighScore (event){
+    event.preventDefault();
+
+    if (initials.value.length === 0){
+        return
+    } else {
+        newScore = {
+            userName: initials.value.trim(),
+            userScore: score
+        };
+        scoreArray.push(newScore);
+
+        scoreArray.sort((a,b) => b.userScore - a.userScore);
+
+        localStorage.setItem("score", JSON.stringify(scoreArray));
+
+        seeHighScores();
+    }
 
 }
 
@@ -173,12 +195,85 @@ function storeHighScore (event){
 
 //loads high scores into scores array
 function loadHighScore(){
+    storedScores = JSON.parse(localStorage.getItem("score"));
+
+    if (storedScores !== null) {
+        scoreArray = storedScores;
+
+        return scoreArray;
+    }
 
 }
 
 //shows the high scores
-function seeHighScores(){
-    
+function seeHighScores() {
+    // clears timerInterval if countdown has been initiated
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    };
+
+    // creates new list and button elements and appends them to container
+    container.className = 'score-page mt-5 card bg-light p-4';
+    var ul = document.createElement('ul');
+    var returnButton = document.createElement('button');
+    var clearButton = document.createElement('button');
+    returnButton.textContent = 'Go Back';
+    clearButton.textContent = 'Clear High Scores';
+    container.appendChild(ul);
+    container.appendChild(returnButton);
+    container.appendChild(clearButton);
+
+    // removes navbar and other elements
+    startButton.style.display = 'none';
+    navBar.style.visibility = 'hidden';
+    title.textContent = 'High Scores';
+    text.textContent = '';
+    text.setAttribute('style', 'border-top: 0');
+    quizAnswers.style.display = 'none';
+    inputField.style.display = 'none';
+
+    // render a new li for each highscore
+    for (i = 0; i < scoreArray.length; i++) {
+        var score = scoreArray[i].userName + ' : ' + scoreArray[i].userScore;
+
+        li = document.createElement('li');
+        li.textContent = score;
+        ul.appendChild(li);
+    }
+
+    // adds event listener for return button to bring person back to index.html
+    returnButton.addEventListener('click', function() {
+        location.href = 'index.html'
+    });
+
+    // adds event listener for clear button for clearing local storage and deletes li elements
+    clearButton.addEventListener('click', function() {
+        localStorage.clear();
+        ul.innerHTML = '';
+    });
+};
+
+
+// counts down from starting timerSecs 
+function countdown() {
+    // interval function that counts down
+    timerInterval = setInterval(function() {
+        timerSecs --;
+        timerDisplay.textContent = timerSecs;
+
+        // alert that user has run out of time and end game if timer runs out
+        if (timerSecs < 1) {
+            timerDisplay.textContent = 0;
+            endGame();
+            clearInterval(timerInterval);
+        };
+
+        // clear timer if current question hits 5 (game is over)
+        if (currentQuestion === 5) {
+            timerDisplay.textContent = timerSecs;
+            clearInterval(timerInterval);
+        }
+    }, 1000)
 }
 
 
@@ -205,5 +300,11 @@ function timerCountdown(){
 
 
 } 
+
+loadHighScore();
+
 // start quiz EL
 startButton.addEventListener("click", startQuiz);
+
+//highScore EL
+highscoresLink.addEventListener("click", seeHighScores);
