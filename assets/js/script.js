@@ -139,8 +139,8 @@ function checkAnswer(event){
             answerMessage.style.display = "none";
         }, 800)
 
-        if (timerSeconds < 10) {
-            timerSeconds - 10;
+        if (timerSeconds < 15) {
+            timerSeconds - 15;
             endGame();
 
         } else if (currentQuestion === 8) {
