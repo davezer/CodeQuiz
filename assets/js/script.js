@@ -63,3 +63,96 @@ const questions = [
     },
    
 ];
+
+// starts game
+function startQuiz(){
+    //sets the timer 
+    timerSeconds = 100;
+    timerDisplay.textContent = timerSeconds;
+
+    //starts timer 
+
+    //starts questions
+
+    //remove start button
+    startButton.style.display = "none";
+}
+
+// changes to next question
+function nextQuestion(){
+    // change look of page
+    container.className = "results-page mt-5"
+    title.textContent = "Question" + (currentQuestion + 1);
+    title.setAttribute("claass", "h2")
+    text.textContent = questions[currentQuestion].title;
+    text.className = "h4";
+    text.setAttribute("style", "border-top: 1px double solid; padding-top 15px;")
+
+    //display the answer buttons
+    quizAnswers.style.display = "block";
+
+    // take answers from the questions array and assign to answer buttons
+    answerButtons[0].textContent = questions[currentQuestion].choices[0];
+    answerButtons[1].textContent = questions[currentQuestion].choices[1];
+    answerButtons[2].textContent = questions[currentQuestion].choices[2];
+    answerButtons[3].textContent = questions[currentQuestion].choices[3];
+
+    // clicking button checks answer (***MAKE THIS FUNCTION NEXT***)
+    for (i = 0; i < answerButtons.length; i++){
+        answerButtons[i].addEventListener("click", checkAnswer);
+    }
+}
+
+function checkAnswer(event){
+    
+    // correct answer
+    if (event.target.textContent === questions[currentQuestion].answer){
+        answerMessage.style.display = "block";
+        answerMessage.textContent = "Yes!";
+        answerMessage.className= "answer-message";
+        currentQuestion++;
+        score++;
+    
+
+        // end game if no more questions
+        if (currentQuestion === questions.length){
+            endGame();
+        
+        //if more questions exist, keep going
+        } else {
+            nextQuestion();
+        }
+
+    // if wrong answer is selected
+    } else {
+        currentQuestion++;
+        answerMessage.style.display = "block";
+        answerMessage.textContent = "Nope!";
+        answerMessage.className = "answer-message";
+
+        if (timerSeconds < 10) {
+            timerSeconds - 10;
+            endGame();
+
+        } else if (currentQuestion === 8) {
+            endGame();
+
+        } else {
+            timerSeconds -= 10;
+            nextQuestion();
+        };
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+// start quiz EL
+startButton.addEventListener("click", startQuiz);
