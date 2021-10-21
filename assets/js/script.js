@@ -9,7 +9,6 @@ var quizAnswers = document.getElementById("quiz-answers");
 var answerButtons = document.getElementsByClassName("answer-button");
 var answerMessage = document.getElementById("answer-message");
 var inputField = document.getElementById("input-field");
-var initials = document.getElementById("intials");
 var submitButton = document.getElementById("submitBtn");
 
 
@@ -19,6 +18,7 @@ var currentQuestion = 0;
 var score = timerSeconds;
 var scoreArray = [];
 var timerInterval = false;
+
 
 const questions = [
     {
@@ -163,9 +163,7 @@ function endGame(){
     text.removeAttribute("class");
     text.textContent = "Final score: " + timerSeconds + ". Enter your initials!";
     inputField.style.display = "block";
-
     
-
     //change title display
     if (timerSeconds <= 0){
         title.textContent = "Times Up!";
@@ -174,18 +172,20 @@ function endGame(){
     
     }
 
-    submitButton.addEventListener("click", seeHighScores);
+    submitButton.addEventListener("click", storeHighScore);
     
     
 }
 
 //store high scores in localStorage
-function storeHighScore (event){
+function storeHighScore(event) {
     event.preventDefault();
 
-    if (initials.value.length === 0){
+    // if no input is detected nothing happens
+    if (initials.value.length === 0) {
         return
-
+    
+    // otherwise initial/score combo is pushed to score array
     } else {
         newScore = {
             userName: initials.value.trim(),
@@ -193,12 +193,20 @@ function storeHighScore (event){
         };
         scoreArray.push(newScore);
 
-        scoreArray.sort((a,b) => b.userScore - a.userScore);
-
-        localStorage.setItem("score", JSON.stringify(scoreArray));
+        // sorts scores so that the highest number is pushed to the front of array
+        scoreArray.sort((a, b) => b.userScore - a.userScore);
+        
+        // array is made into a string and pushed to local storage
+        
+        // user is taken to highscore page
         seeHighScores();
-
+        saveScores();
+        
     }
+}
+
+function saveScores (){
+    localStorage.setItem("score", JSON.stringify(scoreArray));
     
 }
 
@@ -244,7 +252,7 @@ function seeHighScores() {
 
     //  new li for each highscore
     for (i = 0; i < scoreArray.length; i++) {
-        var score = scoreArray[i].userName + ' : ' + scoreArray[i].userScore;
+        var score = scoreArray[i].userName + ': ' + scoreArray[i].userScore;
 
         li = document.createElement('li');
         li.textContent = score;
@@ -261,6 +269,7 @@ function seeHighScores() {
         localStorage.clear();
         ul.innerHTML = '';
     });
+    
 };
 
 
