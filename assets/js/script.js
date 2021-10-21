@@ -83,7 +83,7 @@ function startQuiz(){
 function nextQuestion(){
     // change look of page
     container.className = "results-page mt-5"
-    title.textContent = "Question" + (currentQuestion + 1);
+    title.textContent = "Question " + (currentQuestion + 1);
     title.setAttribute("claass", "h2")
     text.textContent = questions[currentQuestion].title;
     text.className = "h4";
